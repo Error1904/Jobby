@@ -39,14 +39,17 @@ from pathlib import Path
 
 # Setup clean, structured logging (both console and persistent execution log)
 _log_file = Path(__file__).resolve().parent / "agent_execution.log"
+_handlers = [logging.StreamHandler(sys.stdout)]
+try:
+    _handlers.append(logging.FileHandler(str(_log_file), encoding="utf-8"))
+except Exception:
+    pass
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
-    handlers=[
-        logging.StreamHandler(sys.stdout),
-        logging.FileHandler(str(_log_file), encoding="utf-8"),
-    ],
+    handlers=_handlers,
 )
 logger = logging.getLogger("tech_job_agent.pipeline")
 
@@ -198,6 +201,11 @@ class TechJobAgent:
                 # Respect polite rate limiting between queries
                 time.sleep(self.request_delay)
 
+        # Automatically push any pending unsynced jobs to Notion
+        if self.notion_client.is_configured():
+            additional_synced = self.sync_pending_to_notion()
+            self.stats["synced_to_notion"] += additional_synced
+
         elapsed = round(time.time() - start_time, 2)
         self.stats["elapsed_seconds"] = elapsed
 
@@ -217,12 +225,20 @@ class TechJobAgent:
         synced_count = 0
 
         for row in unsynced:
+            loc_str = row["location"]
+            if "Navi Mumbai" in loc_str or "navi" in loc_str.lower():
+                canon_loc = "Navi Mumbai"
+            elif "Thane" in loc_str:
+                canon_loc = "Thane"
+            else:
+                canon_loc = "Mumbai"
+
             # Reconstruct ParsedJob from row dict
             job = ParsedJob(
                 company_name=row["company_name"],
                 job_title=row["job_title"],
                 location=row["location"],
-                canonical_location=row["location"].split(" ")[0],
+                canonical_location=canon_loc,
                 website_url=row["website_url"],
                 experience_required=row["experience_required"],
                 tech_stack=row["tech_stack"],

@@ -35,11 +35,19 @@ if (-not (Test-Path $PythonExe)) {
 
 function Register-DailyTask {
     Write-Host "`n[1/2] Registering 9:00 PM Daily Scheduled Task..." -ForegroundColor Yellow
-    & schtasks /Create /SC DAILY /TN $TaskName /TR "`"$PythonExe`" `"$AgentScript`"" /ST 21:00 /F
-    if ($LASTEXITCODE -eq 0) {
-        Write-Host "[SUCCESS] Daily task '$TaskName' registered for 9:00 PM." -ForegroundColor Green
-    } else {
-        Write-Warning "schtasks returned exit code $LASTEXITCODE."
+    try {
+        $taskAction = New-ScheduledTaskAction -Execute $PythonExe -Argument "`"$AgentScript`"" -WorkingDirectory $ScriptDir
+        $taskTrigger = New-ScheduledTaskTrigger -Daily -At "21:00"
+        $taskSettings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable
+        $taskPrincipal = New-ScheduledTaskPrincipal -UserId $env:USERNAME -LogonType Interactive
+        Register-ScheduledTask -TaskName $TaskName -Action $taskAction -Trigger $taskTrigger -Settings $taskSettings -Principal $taskPrincipal -Force | Out-Null
+        Write-Host "[SUCCESS] Daily task '$TaskName' registered for 9:00 PM with Working Directory and Battery support." -ForegroundColor Green
+    } catch {
+        Write-Warning "PowerShell ScheduledTask command failed ($_); falling back to schtasks..."
+        & schtasks /Create /SC DAILY /TN $TaskName /TR "`"$PythonExe`" `"$AgentScript`"" /ST 21:00 /F
+        if ($LASTEXITCODE -eq 0) {
+            Write-Host "[SUCCESS] Daily task '$TaskName' registered for 9:00 PM via schtasks." -ForegroundColor Green
+        }
     }
 }
 

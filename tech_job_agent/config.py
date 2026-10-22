@@ -144,6 +144,9 @@ ROLE_KEYWORDS: Dict[str, List[str]] = {
         "associate software engineer",
         "graduate software engineer",
         "trainee software engineer",
+        "software engineer trainee",
+        "graduate trainee",
+        "engineer trainee",
     ],
     "Full Stack Developer": [
         "full stack",
@@ -164,6 +167,7 @@ ROLE_KEYWORDS: Dict[str, List[str]] = {
         "java engineer",
         "spring boot developer",
         "core java developer",
+        "associate java developer",
     ],
     "Data Analyst": [
         "data analyst",
@@ -180,6 +184,11 @@ ROLE_KEYWORDS: Dict[str, List[str]] = {
         "site reliability engineer",
         "sre",
         "cloud trainee",
+        "cloud & devops trainee",
+        "cloud & devops",
+        "devops trainee",
+        "associate devops",
+        "cloud support",
     ],
     "QA/Testing Engineer": [
         "qa engineer",

@@ -27,8 +27,8 @@ class NotionSyncClient:
         api_key: Optional[str] = None,
         database_id: Optional[str] = None,
     ):
-        self.api_key = (api_key or NOTION_API_KEY).strip()
-        self.database_id = (database_id or NOTION_DATABASE_ID).strip()
+        self.api_key = (api_key if api_key is not None else NOTION_API_KEY).strip()
+        self.database_id = (database_id if database_id is not None else NOTION_DATABASE_ID).strip()
         self.client: Optional[Client] = None
 
         if self.is_configured():
@@ -126,8 +126,14 @@ class NotionSyncClient:
                 if clean_tag:
                     multi_select_tags.append({"name": clean_tag})
 
-            # Clean location for select property
-            clean_location = job.canonical_location.replace(",", "").strip()[:100]
+            # Clean location for select property (strictly Mumbai, Navi Mumbai, or Thane)
+            raw_loc = job.canonical_location.strip()
+            if "navi mumbai" in raw_loc.lower() or raw_loc.lower() == "navi":
+                clean_location = "Navi Mumbai"
+            elif "thane" in raw_loc.lower():
+                clean_location = "Thane"
+            else:
+                clean_location = "Mumbai"
 
             properties: Dict[str, Any] = {
                 # Title property
