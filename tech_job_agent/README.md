@@ -141,36 +141,45 @@ python agent.py --sync-unsynced
 
 The pipeline supports two methods to run automatically everyday at **9:00 PM (21:00)** and sync to Notion:
 
-### Option A: Windows Task Scheduler & Startup Auto-Run (Recommended)
-Runs completely in the background without needing a terminal or prompt open:
+### Option A: Windows Task Scheduler, Startup Auto-Run & Desktop Shortcuts (Recommended)
+Runs completely in the background without needing a terminal open, and includes desktop shortcuts for when your laptop was off at 9:00 PM:
 
 ```powershell
-# 1. Setup both 9:00 PM daily task and Windows Startup auto-run
+# 1. Setup 9:00 PM daily task + Windows Startup auto-run + Desktop shortcuts
 powershell.exe -ExecutionPolicy Bypass -File "setup_windows_scheduler.ps1" -Action all
 
-# 2. Check scheduled task and startup auto-run status
+# 2. Check scheduled task, startup, and desktop shortcuts status
 powershell.exe -ExecutionPolicy Bypass -File "setup_windows_scheduler.ps1" -Action status
 
-# 3. Enable or disable startup auto-run only
+# 3. Create or recreate Desktop shortcuts only
+powershell.exe -ExecutionPolicy Bypass -File "setup_windows_scheduler.ps1" -Action shortcut
+
+# 4. Enable or disable startup auto-run only
 powershell.exe -ExecutionPolicy Bypass -File "setup_windows_scheduler.ps1" -Action enable-startup
 powershell.exe -ExecutionPolicy Bypass -File "setup_windows_scheduler.ps1" -Action disable-startup
 
-# 4. Manually trigger a test run immediately
+# 5. Manually trigger a test run immediately
 powershell.exe -ExecutionPolicy Bypass -File "setup_windows_scheduler.ps1" -Action run
 
-# 5. Remove scheduled task if needed
+# 6. Remove scheduled task and shortcuts if needed
 powershell.exe -ExecutionPolicy Bypass -File "setup_windows_scheduler.ps1" -Action remove
 ```
 
 Alternatively, use the batch file:
 ```cmd
-setup_windows_scheduler.bat                 :: Register 9:00 PM daily task + Startup auto-run
-setup_windows_scheduler.bat status          :: Check status of both
+setup_windows_scheduler.bat                 :: Register 9:00 PM task + Startup + Desktop Shortcuts
+setup_windows_scheduler.bat shortcut        :: Create Desktop shortcuts only
+setup_windows_scheduler.bat status          :: Check status of scheduler, startup, and shortcuts
 setup_windows_scheduler.bat enable-startup  :: Enable startup run only
 setup_windows_scheduler.bat disable-startup :: Disable startup run only
 setup_windows_scheduler.bat run             :: Trigger immediately
 setup_windows_scheduler.bat remove          :: Remove 9:00 PM scheduled task
 ```
+
+#### 🖥️ Desktop Catch-Up Shortcuts
+If your laptop was shut down or in sleep mode when you were not home at 9:00 PM, two shortcuts are available directly on your Desktop:
+- **`Run Tech Job Agent`**: Double-click to run with live terminal output, colorized progress, and execution summary. Pauses on finish so you can see how many jobs were found.
+- **`Run Tech Job Agent (Silent)`**: Runs silently in the background with zero pop-up windows, automatically logging to `agent_execution.log`.
 
 ### Option B: Standalone Python Daemon Scheduler
 If running in a terminal, background worker, or server:

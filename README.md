@@ -7,8 +7,9 @@ An autonomous Python agent that continuously discovers, parses, filters, and syn
 - **Geographic Focus:** Mumbai Metropolitan Region (BKC, Andheri, Powai, Airoli, Vashi, Thane Wagle Estate, etc.).
 - **Dual Persistence:** SQLite database storage with strict URL deduplication + live sync to Notion Database.
 - **Autonomous Execution:**
-  - **Daily Schedule:** Automatically runs at 9:00 PM via Windows Task Scheduler.
+  - **Daily Schedule:** Automatically runs at 9:00 PM via Windows Task Scheduler (with battery & missed-run catchup).
   - **Startup Auto-Run:** Automatically runs silently in the background whenever Windows starts up.
+  - **Desktop Shortcuts:** Instant catch-up shortcuts on your Desktop (`Run Tech Job Agent` and `Run Tech Job Agent (Silent)`) for when your laptop was off at 9:00 PM.
 - **Complete Logging:** Timestamped logging in `agent_execution.log`.
 
 ---

@@ -16,10 +16,10 @@ timeout /t 30 /nobreak >nul
 
 if exist "..\.venv\Scripts\python.exe" (
     echo Executing: "..\.venv\Scripts\python.exe" agent.py >> "%~dp0agent_execution.log"
-    "..\.venv\Scripts\python.exe" "agent.py"
+    "..\.venv\Scripts\python.exe" "agent.py" >> "%~dp0agent_execution.log" 2>&1
 ) else (
     echo Executing: python agent.py >> "%~dp0agent_execution.log"
-    python "agent.py"
+    python "agent.py" >> "%~dp0agent_execution.log" 2>&1
 )
 
 echo [STARTUP RUN COMPLETED] Finished at %DATE% %TIME% >> "%~dp0agent_execution.log"
